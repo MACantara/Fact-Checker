@@ -12,12 +12,6 @@
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">RSS Feeds</h1>
                     <p class="text-gray-600">Monitor and manage news sources feeding our search engine</p>
                 </div>
-                <div class="mt-4 lg:mt-0">
-                    <button id="update-feeds-btn" 
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-colors">
-                        <i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -131,10 +125,6 @@
                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="bi bi-box-arrow-up-right mr-1 text-xs"></i>View Feed
                     </a>
-                    <button class="test-feed-btn inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
-                            data-feed-key="{{ feed_key }}">
-                        <i class="bi bi-play mr-1 text-xs"></i>Test Feed
-                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -181,72 +171,6 @@
 {% block scripts %}
 <script>
     let updateInProgress = false;
-
-    // Update all feeds
-    document.getElementById('update-feeds-btn').addEventListener('click', function() {
-        if (updateInProgress) return;
-        
-        updateInProgress = true;
-        this.disabled = true;
-        this.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>Updating...';
-        
-        // Show progress
-        document.getElementById('update-status').classList.remove('hidden');
-        
-        fetch('/api/update-feeds', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            updateInProgress = false;
-            document.getElementById('update-feeds-btn').disabled = false;
-            document.getElementById('update-feeds-btn').innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds';
-            document.getElementById('update-status').classList.add('hidden');
-            
-            if (data.status === 'completed') {
-                showUpdateResults(data);
-                updateFeedStatuses(data.results);
-            } else {
-                alert('Update failed: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            updateInProgress = false;
-            document.getElementById('update-feeds-btn').disabled = false;
-            document.getElementById('update-feeds-btn').innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds';
-            document.getElementById('update-status').classList.add('hidden');
-            
-            console.error('Error:', error);
-            alert('Update failed: ' + error.message);
-        });
-    });
-
-    // Test individual feed
-    document.querySelectorAll('.test-feed-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const feedKey = this.dataset.feedKey;
-            const originalText = this.innerHTML;
-            
-            this.disabled = true;
-            this.innerHTML = '<div class="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-1"></div>Testing...';
-            
-            // Simulate feed test (you can implement actual API call)
-            setTimeout(() => {
-                this.disabled = false;
-                this.innerHTML = originalText;
-                
-                // Update feed status
-                const statusDot = document.querySelector(`.feed-status[data-feed="${feedKey}"]`);
-                statusDot.classList.remove('bg-gray-300', 'bg-red-500');
-                statusDot.classList.add('bg-green-500');
-                
-                alert(`Feed "${feedKey}" tested successfully!`);
-            }, 2000);
-        });
-    });
 
     function showUpdateResults(data) {
         const modal = document.getElementById('update-results-modal');
