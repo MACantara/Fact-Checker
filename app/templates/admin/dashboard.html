@@ -94,7 +94,7 @@
                         <th class="text-left py-2 px-4 font-medium text-gray-600">Name</th>
                         <th class="text-left py-2 px-4 font-medium text-gray-600">Category</th>
                         <th class="text-center py-2 px-4 font-medium text-gray-600">Status</th>
-                        <th class="text-center py-2 px-4 font-medium text-gray-600">Articles</th>
+                        <th class="text-center py-2 px-4 font-medium text-gray-600">Articles (Total/Last Fetch)</th>
                         <th class="text-left py-2 px-4 font-medium text-gray-600">Last Updated</th>
                     </tr>
                 </thead>
@@ -118,7 +118,10 @@
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 text-center">
-                            <span class="font-medium">{{ feed.last_articles_count or 0 }}</span>
+                            <div class="text-sm">
+                                <div class="font-medium text-gray-900">{{ feed.actual_article_count or 0 }}</div>
+                                <div class="text-gray-500">({{ feed.last_articles_count or 0 }} last fetch)</div>
+                            </div>
                         </td>
                         <td class="py-3 px-4 text-sm text-gray-500">
                             {% if feed.last_fetched_at %}

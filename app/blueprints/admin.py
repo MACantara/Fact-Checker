@@ -22,7 +22,11 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 def index():
     """Admin dashboard"""
     db_repo = DatabaseRepository()
-    feeds = db_repo.get_all_feeds()
+    feeds = db_repo.get_all_feeds(active_only=False)  # Get all feeds for dashboard
+    
+    # Add actual article count to each feed
+    for feed in feeds:
+        feed.actual_article_count = db_repo.get_article_count_by_feed(feed.key)
     
     # Get statistics
     total_feeds = len(feeds)
