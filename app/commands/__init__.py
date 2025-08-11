@@ -5,6 +5,7 @@ from app.services import RSSFeedService, SearchService, FeedUpdateService
 from app.repositories import SearchRepository
 from app.repositories.database import DatabaseRepository
 from .feeds import register_feed_commands
+from .backup import register_backup_commands
 
 
 @click.command()
@@ -123,3 +124,6 @@ def register_commands(app):
     
     # Register feed management commands
     register_feed_commands(app)
+    
+    # Register backup management commands
+    register_backup_commands(app)

@@ -18,6 +18,13 @@ class Config:
     # Search configuration
     SEARCH_RESULTS_PER_PAGE = int(os.environ.get('SEARCH_RESULTS_PER_PAGE', 20))
     
+    # Backup configuration
+    BACKUP_ENABLED = os.environ.get('BACKUP_ENABLED', 'true').lower() == 'true'
+    BACKUP_SCHEDULE_HOURS = int(os.environ.get('BACKUP_SCHEDULE_HOURS', 24))  # Backup every 24 hours
+    BACKUP_KEEP_DAYS = int(os.environ.get('BACKUP_KEEP_DAYS', 30))  # Keep backups for 30 days
+    BACKUP_KEEP_COUNT = int(os.environ.get('BACKUP_KEEP_COUNT', 10))  # Always keep last 10 backups
+    BACKUP_COMPRESS = os.environ.get('BACKUP_COMPRESS', 'true').lower() == 'true'
+    
     # Default RSS feeds
     DEFAULT_RSS_FEEDS = {
         'pna': {
