@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Manage RSS Feeds - Admin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Manage RSS Feeds</h1>
+            <p class="text-gray-600">Add, edit, or remove RSS feeds</p>
+        </div>
+        <a href="{{ url_for('admin.new_feed') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center">
+            <i class="bi bi-plus-circle mr-2"></i>
+            Add New Feed
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-green-100 text-green-700 border border-green-200{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if feeds %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 font-medium text-gray-600">Feed Details</th>
+                        <th class="text-left py-3 px-4 font-medium text-gray-600">URL</th>
+                        <th class="text-center py-3 px-4 font-medium text-gray-600">Category</th>
+                        <th class="text-center py-3 px-4 font-medium text-gray-600">Status</th>
+                        <th class="text-center py-3 px-4 font-medium text-gray-600">Articles</th>
+                        <th class="text-center py-3 px-4 font-medium text-gray-600">Last Fetch</th>
+                        <th class="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for feed in feeds %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-4 px-4">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ feed.name }}</p>
+                                <p class="text-sm text-gray-500">{{ feed.key }}</p>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <a href="{{ feed.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm truncate block max-w-xs">
+                                {{ feed.url }}
+                                <i class="bi bi-box-arrow-up-right ml-1"></i>
+                            </a>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">{{ feed.category }}</span>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <button onclick="toggleFeedStatus('{{ feed.key }}', {{ feed.active|lower }})" 
+                                    class="{% if feed.active %}bg-green-100 text-green-800 hover:bg-green-200{% else %}bg-red-100 text-red-800 hover:bg-red-200{% endif %} text-xs px-2 py-1 rounded-full transition duration-200 cursor-pointer">
+                                {% if feed.active %}Active{% else %}Inactive{% endif %}
+                            </button>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <span class="font-medium">{{ feed.last_articles_count or 0 }}</span>
+                        </td>
+                        <td class="py-4 px-4 text-center text-sm text-gray-500">
+                            {% if feed.last_fetched_at %}
+                                <div>
+                                    {{ feed.last_fetched_at.strftime('%m/%d %H:%M') }}
+                                    {% if feed.last_fetch_status == 'error' %}
+                                        <i class="bi bi-exclamation-triangle text-red-500 ml-1" title="{{ feed.last_fetch_error }}"></i>
+                                    {% elif feed.last_fetch_status == 'success' %}
+                                        <i class="bi bi-check-circle text-green-500 ml-1"></i>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <a href="{{ url_for('admin.edit_feed', feed_key=feed.key) }}" 
+                                   class="text-blue-600 hover:text-blue-800 transition duration-200" 
+                                   title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button onclick="deleteFeed('{{ feed.key }}', '{{ feed.name }}')" 
+                                        class="text-red-600 hover:text-red-800 transition duration-200" 
+                                        title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div class="mb-4">
+            <i class="bi bi-rss text-gray-400 text-6xl"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No RSS Feeds Found</h3>
+        <p class="text-gray-500 mb-4">Get started by adding your first RSS feed.</p>
+        <a href="{{ url_for('admin.new_feed') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-200 inline-flex items-center">
+            <i class="bi bi-plus-circle mr-2"></i>
+            Add New Feed
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+async function toggleFeedStatus(feedKey, currentStatus) {
+    try {
+        const response = await fetch(`/admin/feeds/${feedKey}/toggle`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    } catch (error) {
+        alert(`Error toggling feed status: ${error.message}`);
+    }
+}
+
+function deleteFeed(feedKey, feedName) {
+    if (confirm(`Are you sure you want to delete the feed "${feedName}"?\n\nThis will also delete all associated articles and cannot be undone.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/feeds/${feedKey}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

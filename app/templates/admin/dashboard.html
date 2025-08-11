@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Philippine News Search{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+        <p class="text-gray-600">Manage RSS feeds and monitor system statistics</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Feeds</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ stats.total_feeds }}</p>
+                </div>
+                <div class="p-3 bg-blue-100 rounded-full">
+                    <i class="bi bi-rss-fill text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Active Feeds</p>
+                    <p class="text-2xl font-bold text-green-600">{{ stats.active_feeds }}</p>
+                </div>
+                <div class="p-3 bg-green-100 rounded-full">
+                    <i class="bi bi-check-circle-fill text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Articles</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ stats.total_articles }}</p>
+                </div>
+                <div class="p-3 bg-purple-100 rounded-full">
+                    <i class="bi bi-file-text-fill text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Categories</p>
+                    <p class="text-2xl font-bold text-orange-600">{{ stats.categories }}</p>
+                </div>
+                <div class="p-3 bg-orange-100 rounded-full">
+                    <i class="bi bi-tags-fill text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+        <div class="flex flex-wrap gap-4">
+            <a href="{{ url_for('admin.new_feed') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center">
+                <i class="bi bi-plus-circle mr-2"></i>
+                Add New Feed
+            </a>
+            <a href="{{ url_for('admin.feeds') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center">
+                <i class="bi bi-list-ul mr-2"></i>
+                Manage Feeds
+            </a>
+            <button onclick="updateAllFeeds()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center">
+                <i class="bi bi-arrow-clockwise mr-2"></i>
+                Update All Feeds
+            </button>
+        </div>
+    </div>
+
+    <!-- Recent Feeds -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">RSS Feeds Overview</h2>
+            <a href="{{ url_for('admin.feeds') }}" class="text-blue-600 hover:text-blue-800 text-sm">View All →</a>
+        </div>
+        
+        {% if feeds %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2 px-4 font-medium text-gray-600">Name</th>
+                        <th class="text-left py-2 px-4 font-medium text-gray-600">Category</th>
+                        <th class="text-center py-2 px-4 font-medium text-gray-600">Status</th>
+                        <th class="text-center py-2 px-4 font-medium text-gray-600">Articles</th>
+                        <th class="text-left py-2 px-4 font-medium text-gray-600">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feed in feeds[:10] %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ feed.name }}</p>
+                                <p class="text-sm text-gray-500">{{ feed.key }}</p>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">{{ feed.category }}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            {% if feed.active %}
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                            {% else %}
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="font-medium">{{ feed.last_articles_count or 0 }}</span>
+                        </td>
+                        <td class="py-3 px-4 text-sm text-gray-500">
+                            {% if feed.last_fetched_at %}
+                                {{ feed.last_fetched_at.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-8">No RSS feeds found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+async function updateAllFeeds() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin mr-2"></i>Updating...';
+    
+    try {
+        const response = await fetch('/api/update-feeds', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert(`Feed update completed!\nSuccessful: ${result.summary.successful_feeds}\nFailed: ${result.summary.failed_feeds}\nArticles indexed: ${result.summary.total_articles_indexed}`);
+            location.reload();
+        } else {
+            alert(`Error updating feeds: ${result.error}`);
+        }
+    } catch (error) {
+        alert(`Error updating feeds: ${error.message}`);
+    } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+    }
+}
+</script>
+{% endblock %}

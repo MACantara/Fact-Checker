@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  fact-checker:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=your-production-secret-key-here
+      - RSS_UPDATE_INTERVAL=30
+      - SEARCH_RESULTS_PER_PAGE=20
+    volumes:
+      - ./data:/app/data
+      - ./index:/app/index
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - fact-checker
+    restart: unless-stopped

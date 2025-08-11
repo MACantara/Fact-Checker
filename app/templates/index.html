@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Philippine News Search{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Hero Section -->
+    <div class="relative py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                Philippine News
+                <span class="text-blue-600">Search Engine</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Search through thousands of articles from leading Philippine news sources. 
+                Stay informed with real-time updates from trusted local media.
+            </p>
+            
+            <!-- Search Form -->
+            <div class="max-w-3xl mx-auto">
+                <form action="{{ url_for('main.search') }}" method="GET" class="space-y-4">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="bi bi-search text-gray-400 text-lg"></i>
+                        </div>
+                        <input type="text" 
+                               name="q" 
+                               placeholder="Search news articles..." 
+                               class="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg"
+                               required>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <select name="category" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Categories</option>
+                            {% if metadata and metadata.categories %}
+                                {% for category in metadata.categories %}
+                                    <option value="{{ category }}">{{ category }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        
+                        <select name="source" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Sources</option>
+                            {% if metadata and metadata.sources %}
+                                {% for source in metadata.sources %}
+                                    <option value="{{ source }}">{{ source }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        
+                        <select name="sort_by" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="relevance">Most Relevant</option>
+                            <option value="date">Most Recent</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all shadow-lg">
+                        <i class="bi bi-search mr-2"></i>Search News
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    {% if metadata %}
+    <div class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Search Database Statistics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">{{ metadata.total_articles }}</div>
+                        <div class="text-gray-600">Total Articles</div>
+                        <i class="bi bi-database text-blue-500 text-2xl mt-2"></i>
+                    </div>
+                    <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                        <div class="text-3xl font-bold text-green-600 mb-2">{{ metadata.categories|length }}</div>
+                        <div class="text-gray-600">Categories</div>
+                        <i class="bi bi-tags text-green-500 text-2xl mt-2"></i>
+                    </div>
+                    <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">{{ metadata.sources|length }}</div>
+                        <div class="text-gray-600">News Sources</div>
+                        <i class="bi bi-newspaper text-purple-500 text-2xl mt-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Features Section -->
+    <div class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-lightning-charge text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Fast Search</h3>
+                    <p class="text-gray-600">Powered by Whoosh search engine for lightning-fast results across thousands of articles.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-arrow-clockwise text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Real-time Updates</h3>
+                    <p class="text-gray-600">Automatically updated RSS feeds ensure you get the latest news as it happens.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-funnel text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Smart Filtering</h3>
+                    <p class="text-gray-600">Filter by category, source, or date to find exactly what you're looking for.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-shield-check text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Trusted Sources</h3>
+                    <p class="text-gray-600">Only content from reputable Philippine news organizations and government sources.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-graph-up text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Relevance Ranking</h3>
+                    <p class="text-gray-600">Advanced scoring algorithm ranks results by relevance to your search query.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-device-responsive text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Mobile Friendly</h3>
+                    <p class="text-gray-600">Responsive design works perfectly on desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Updates -->
+    <div class="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Stay Updated</h2>
+            <p class="text-lg text-gray-600 mb-8">
+                Our system automatically updates with fresh content every {{ config.RSS_UPDATE_INTERVAL if config else 30 }} minutes from leading Philippine news sources.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">Philippine News Agency</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">GMA News</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">Rappler</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">Philippine Star</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">Manila Bulletin</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">And more...</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-focus search input
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    });
+
+    // Enhanced search form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const query = document.querySelector('input[name="q"]').value.trim();
+        if (!query) {
+            e.preventDefault();
+            alert('Please enter a search query');
+            return false;
+        }
+        showLoading();
+    });
+</script>
+{% endblock %}

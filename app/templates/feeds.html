@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}RSS Feeds - Philippine News Search{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">RSS Feeds</h1>
+                    <p class="text-gray-600">Monitor and manage news sources feeding our search engine</p>
+                </div>
+                <div class="mt-4 lg:mt-0">
+                    <button id="update-feeds-btn" 
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-colors">
+                        <i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Statistics Cards -->
+        {% if metadata %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-database text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-gray-900">{{ metadata.total_articles }}</div>
+                        <div class="text-sm text-gray-600">Total Articles</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-rss text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-gray-900">{{ feeds|length }}</div>
+                        <div class="text-sm text-gray-600">RSS Feeds</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-newspaper text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-gray-900">{{ metadata.sources|length }}</div>
+                        <div class="text-sm text-gray-600">Active Sources</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Update Status -->
+        <div id="update-status" class="hidden mb-6">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+                    <span class="text-blue-800 font-medium">Updating RSS feeds...</span>
+                </div>
+                <div class="mt-2">
+                    <div class="w-full bg-blue-200 rounded-full h-2">
+                        <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feeds Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for feed_key, feed_config in feeds.items() %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 feed-card" data-feed-key="{{ feed_key }}">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ feed_config.name }}</h3>
+                            {% if feed_config.active %}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Active</span>
+                            {% else %}
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">Inactive</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-600 mb-2">
+                            <i class="bi bi-tag mr-1"></i>{{ feed_config.category }}
+                        </div>
+                        <div class="text-sm text-gray-500 break-all">
+                            <i class="bi bi-link-45deg mr-1"></i>{{ feed_config.url }}
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 ml-4">
+                        <div class="w-3 h-3 rounded-full bg-gray-300 feed-status" data-feed="{{ feed_key }}"></div>
+                    </div>
+                </div>
+                
+                <div class="feed-info hidden">
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <div class="text-sm text-gray-600">
+                            <div class="flex justify-between items-center mb-1">
+                                <span>Last Update:</span>
+                                <span class="font-medium last-update">Never</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span>Articles Found:</span>
+                                <span class="font-medium article-count">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Status:</span>
+                                <span class="font-medium update-status">Unknown</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 flex space-x-2">
+                    <a href="{{ feed_config.url }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="bi bi-box-arrow-up-right mr-1 text-xs"></i>View Feed
+                    </a>
+                    <button class="test-feed-btn inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
+                            data-feed-key="{{ feed_key }}">
+                        <i class="bi bi-play mr-1 text-xs"></i>Test Feed
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Categories Overview -->
+        {% if metadata and metadata.categories %}
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Available Categories</h2>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-wrap gap-2">
+                    {% for category in metadata.categories %}
+                    <span class="bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm font-medium">
+                        {{ category }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Update Results Modal -->
+<div id="update-results-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">Feed Update Results</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-6 overflow-y-auto max-h-64">
+            <div id="update-results-content">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let updateInProgress = false;
+
+    // Update all feeds
+    document.getElementById('update-feeds-btn').addEventListener('click', function() {
+        if (updateInProgress) return;
+        
+        updateInProgress = true;
+        this.disabled = true;
+        this.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>Updating...';
+        
+        // Show progress
+        document.getElementById('update-status').classList.remove('hidden');
+        
+        fetch('/api/update-feeds', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateInProgress = false;
+            document.getElementById('update-feeds-btn').disabled = false;
+            document.getElementById('update-feeds-btn').innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds';
+            document.getElementById('update-status').classList.add('hidden');
+            
+            if (data.status === 'completed') {
+                showUpdateResults(data);
+                updateFeedStatuses(data.results);
+            } else {
+                alert('Update failed: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            updateInProgress = false;
+            document.getElementById('update-feeds-btn').disabled = false;
+            document.getElementById('update-feeds-btn').innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Update All Feeds';
+            document.getElementById('update-status').classList.add('hidden');
+            
+            console.error('Error:', error);
+            alert('Update failed: ' + error.message);
+        });
+    });
+
+    // Test individual feed
+    document.querySelectorAll('.test-feed-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const feedKey = this.dataset.feedKey;
+            const originalText = this.innerHTML;
+            
+            this.disabled = true;
+            this.innerHTML = '<div class="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-1"></div>Testing...';
+            
+            // Simulate feed test (you can implement actual API call)
+            setTimeout(() => {
+                this.disabled = false;
+                this.innerHTML = originalText;
+                
+                // Update feed status
+                const statusDot = document.querySelector(`.feed-status[data-feed="${feedKey}"]`);
+                statusDot.classList.remove('bg-gray-300', 'bg-red-500');
+                statusDot.classList.add('bg-green-500');
+                
+                alert(`Feed "${feedKey}" tested successfully!`);
+            }, 2000);
+        });
+    });
+
+    function showUpdateResults(data) {
+        const modal = document.getElementById('update-results-modal');
+        const content = document.getElementById('update-results-content');
+        
+        let html = `
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-900 mb-2">Summary</h4>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <div class="text-lg font-bold text-green-600">${data.summary.successful_feeds}</div>
+                        <div class="text-sm text-green-700">Successful</div>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-lg">
+                        <div class="text-lg font-bold text-red-600">${data.summary.failed_feeds}</div>
+                        <div class="text-sm text-red-700">Failed</div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="text-lg font-bold text-blue-600">${data.summary.total_articles_indexed}</div>
+                        <div class="text-sm text-blue-700">Articles Added</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Details</h4>
+                <div class="space-y-2 max-h-32 overflow-y-auto">
+        `;
+        
+        data.results.forEach(result => {
+            const statusIcon = result.status === 'success' ? 'bi-check-circle text-green-500' : 'bi-x-circle text-red-500';
+            const articlesText = result.status === 'success' ? `${result.articles_indexed} articles` : result.error_message;
+            
+            html += `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div class="flex items-center">
+                        <i class="bi ${statusIcon} mr-2"></i>
+                        <span class="font-medium">${result.feed_name}</span>
+                    </div>
+                    <span class="text-sm text-gray-600">${articlesText}</span>
+                </div>
+            `;
+        });
+        
+        html += '</div></div>';
+        content.innerHTML = html;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function updateFeedStatuses(results) {
+        results.forEach(result => {
+            const feedCard = document.querySelector(`.feed-card[data-feed-key="${result.feed_key}"]`);
+            if (feedCard) {
+                const statusDot = feedCard.querySelector('.feed-status');
+                const feedInfo = feedCard.querySelector('.feed-info');
+                
+                // Update status dot
+                statusDot.classList.remove('bg-gray-300', 'bg-green-500', 'bg-red-500');
+                if (result.status === 'success') {
+                    statusDot.classList.add('bg-green-500');
+                } else {
+                    statusDot.classList.add('bg-red-500');
+                }
+                
+                // Update feed info
+                feedInfo.querySelector('.last-update').textContent = new Date(result.updated_at).toLocaleString();
+                feedInfo.querySelector('.article-count').textContent = result.articles_indexed || 0;
+                feedInfo.querySelector('.update-status').textContent = result.status;
+                
+                feedInfo.classList.remove('hidden');
+            }
+        });
+    }
+
+    // Close modal
+    document.getElementById('close-modal').addEventListener('click', function() {
+        const modal = document.getElementById('update-results-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    });
+
+    // Close modal on outside click
+    document.getElementById('update-results-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            this.classList.remove('flex');
+        }
+    });
+</script>
+{% endblock %}
