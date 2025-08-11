@@ -44,7 +44,12 @@ def index():
 def feeds():
     """List all RSS feeds"""
     db_repo = DatabaseRepository()
-    feeds = db_repo.get_all_feeds()
+    feeds = db_repo.get_all_feeds(active_only=False)  # Get all feeds, not just active ones
+    
+    # Add actual article count to each feed
+    for feed in feeds:
+        feed.actual_article_count = db_repo.get_article_count_by_feed(feed.key)
+    
     return render_template('admin/feeds.html', feeds=feeds)
 
 

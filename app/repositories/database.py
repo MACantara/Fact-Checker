@@ -179,6 +179,10 @@ class DatabaseRepository:
         """Get total number of articles"""
         return self.db.session.query(Article).count()
     
+    def get_article_count_by_feed(self, feed_key: str) -> int:
+        """Get article count for a specific feed"""
+        return self.db.session.query(Article).filter_by(feed_key=feed_key).count()
+    
     def get_recent_articles(self, limit: int = 10) -> List[Article]:
         """Get most recent articles"""
         return (self.db.session.query(Article)
