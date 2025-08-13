@@ -6,6 +6,7 @@ from app.repositories import SearchRepository
 from app.repositories.database import DatabaseRepository
 from .feeds import register_feed_commands
 from .backup import register_backup_commands
+from .ml import init_app as init_ml_commands
 
 
 @click.command()
@@ -127,3 +128,6 @@ def register_commands(app):
     
     # Register backup management commands
     register_backup_commands(app)
+    
+    # Register ML commands
+    init_ml_commands(app)

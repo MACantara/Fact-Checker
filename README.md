@@ -1,19 +1,31 @@
 # Philippine News Search Engine
 
-A web application for searching through Philippine news articles using Whoosh search engine and RSS feeds from leading Philippine news sources.
+A web application for searching through Philippine news articles using Whoosh se6. **Train the fake news detection model**
+   ```bash
+   python train_model.py
+   ```
+   Or using Flask CLI:
+   ```bash
+   flask ml train
+   ```
+
+7. **Run the application**rch engine and RSS feeds from leading Philippine news sources. Now includes **AI-powered fake news detection** using machine learning.
 
 ## Features
 
 - **Fast Search**: Powered by Whoosh search engine for lightning-fast full-text search
-- **Real-time Updates**: Automatically updates RSS feeds every 30 minutes
+- **🤖 AI Fake News Detection**: Machine learning model trained on 72K+ articles to identify potentially fake or misleading news
+- **Real-time Updates**: Automatically updates RSS feeds every 5 minutes via Windows Task Scheduler
 - **Smart Filtering**: Filter by category, source, or date
 - **Trusted Sources**: Content from reputable Philippine news organizations
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
 - **RESTful API**: JSON API endpoints for integration
+- **🛡️ URL Analysis**: Extract and analyze content directly from news URLs
+- **📊 Batch Processing**: Analyze multiple articles simultaneously
 
 ## News Sources
 
-The application aggregates news from 18 leading Philippine news sources:
+The application aggregates news from 85 leading Philippine news sources including:
 
 - Philippine News Agency (Government)
 - Philippine Daily Inquirer
@@ -25,17 +37,32 @@ The application aggregates news from 18 leading Philippine news sources:
 - BusinessWorld Online
 - SunStar Philippines
 - Interaksyon
+- And 75+ more regional and national sources
+
+## Machine Learning Model
+
+Our fake news detection system uses:
+
+- **Dataset**: WELFake Dataset with 72,134 labeled articles ([Kaggle Source](https://www.kaggle.com/datasets/saurabhshahane/fake-news-classification))
+- **Algorithm**: Logistic Regression for fast and reliable text classification
+- **Features**: TF-IDF vectorization with up to 10,000 features
+- **Accuracy**: 85%+ on test data with cross-validation
+- **Processing**: Advanced text preprocessing with NLTK
+- **Deployment**: Real-time predictions via Flask API and web interface
 
 ## Technology Stack
 
 - **Backend**: Python 3.12, Flask
 - **Search Engine**: Whoosh
 - **RSS Processing**: feedparser
-- **Task Scheduling**: APScheduler
+- **Task Scheduling**: Windows Task Scheduler (production) / APScheduler (development)
+- **Machine Learning**: scikit-learn, NLTK, pandas, numpy
+- **Fake News Detection**: TF-IDF + Logistic Regression
 - **Data Validation**: Marshmallow
 - **Frontend**: HTML5, Tailwind CSS, JavaScript
 - **Icons**: Bootstrap Icons
 - **Deployment**: Docker, Docker Compose
+- **Database**: SQLite (with PostgreSQL/MySQL support)
 
 ## Architecture
 
@@ -143,6 +170,26 @@ flask show-stats
 
 # Optimize search index
 flask optimize-index
+
+# Machine Learning Commands
+flask ml train                    # Train the fake news model
+flask ml train --quick           # Quick train
+flask ml predict "news text"     # Predict if text is fake/real
+flask ml predict-url "https://example.com/article"  # Predict from URL
+flask ml model-info              # Show model information
+flask ml test-samples            # Test with sample cases
+
+# Feed Management
+flask feeds add "Feed Name" "URL" "Category"
+flask feeds list
+flask feeds stats
+flask feeds remove <feed_id>
+
+# Database Backup
+flask backup create              # Create database backup
+flask backup list               # List all backups
+flask backup stats              # Show backup statistics
+flask backup restore <backup_file>  # Restore from backup
 ```
 
 ## API Endpoints
@@ -152,14 +199,36 @@ flask optimize-index
 GET /api/search?q=query&category=News&source=GMA&page=1&per_page=20&sort_by=relevance
 ```
 
-### Get Metadata
+### Fake News Detection
 ```
-GET /api/metadata
+POST /api/ml/predict/text
+{
+    "title": "Article title",
+    "content": "Article content to analyze"
+}
+
+POST /api/ml/predict/url
+{
+    "url": "https://example.com/news-article"
+}
+
+POST /api/ml/predict/batch
+{
+    "texts": [
+        {"title": "Title 1", "content": "Content 1"},
+        {"title": "Title 2", "content": "Content 2"}
+    ]
+}
+
+GET /api/ml/model/info          # Get model information
+GET /api/ml/model/health        # Check model health
+GET /api/ml/predict/demo        # Get demo predictions
 ```
 
-### Update Feeds
+### Metadata and Feeds
 ```
-POST /api/update-feeds
+GET /api/metadata              # Get search metadata
+POST /api/update-feeds         # Update RSS feeds
 ```
 
 ## Search Features
@@ -171,22 +240,51 @@ POST /api/update-feeds
 - **Pagination** support
 - **Advanced query syntax** supported by Whoosh
 
+## Fake News Detection Features
+
+- **Text Analysis**: Paste or type news content for immediate analysis
+- **URL Analysis**: Extract and analyze content directly from news URLs
+- **Batch Processing**: Analyze multiple articles simultaneously
+- **Confidence Scoring**: Get probability scores for fake vs real classification
+- **Model Transparency**: View detailed model information and performance metrics
+- **API Integration**: RESTful API endpoints for external integration
+- **Sample Testing**: Pre-loaded examples to test the system
+
 ## Project Structure
 
 ```
 Fact-Checker/
 ├── app/
 │   ├── blueprints/          # Route handlers
+│   │   ├── main.py         # Main search routes
+│   │   ├── admin.py        # Admin interface
+│   │   ├── ml.py           # ML API endpoints
+│   │   └── fake_news.py    # Fake news web interface
 │   ├── commands/            # CLI commands
+│   │   ├── feeds.py        # Feed management
+│   │   ├── backup.py       # Database backup
+│   │   └── ml.py           # Machine learning commands
 │   ├── extensions/          # Extension initialization
+│   ├── ml/                  # Machine learning components
+│   │   ├── model_trainer.py # ML model training
+│   │   ├── predictor.py    # Prediction service
+│   │   └── models/         # Trained models storage
 │   ├── repositories/        # Data access layer
 │   ├── schemas/             # Data validation schemas
 │   ├── services/            # Business logic
 │   ├── static/              # Static files
 │   ├── templates/           # Jinja2 templates
+│   │   ├── fake_news/      # Fake news detection templates
+│   │   └── ...             # Other templates
 │   └── __init__.py          # App factory
+├── datasets/                # ML training datasets
+│   └── WELFake_Dataset.csv # Fake news training data
 ├── data/                    # RSS feed data storage
 ├── index/                   # Whoosh search index
+├── logs/                    # Application logs
+├── backups/                 # Database backups
+├── scripts/                 # Utility scripts
+├── train_model.py           # ML model training script
 ├── config.py                # Configuration classes
 ├── requirements.txt         # Python dependencies
 ├── run.py                   # Application entry point

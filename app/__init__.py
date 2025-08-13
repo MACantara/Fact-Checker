@@ -29,6 +29,12 @@ def create_app(config_name=None):
     from app.blueprints.admin import admin_bp
     app.register_blueprint(admin_bp)
     
+    # Import and register ML blueprints
+    from app.blueprints.ml import ml_bp
+    from app.blueprints.fake_news import fake_news_bp
+    app.register_blueprint(ml_bp)
+    app.register_blueprint(fake_news_bp)
+    
     # Register CLI commands
     register_commands(app)
     

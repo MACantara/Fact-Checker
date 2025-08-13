@@ -41,6 +41,10 @@
                            class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             <i class="bi bi-house mr-1"></i>Home
                         </a>
+                        <a href="{{ url_for('fake_news.index') }}" 
+                           class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="bi bi-shield-check mr-1"></i>Fake News Detector
+                        </a>
                         <a href="{{ url_for('main.feeds') }}" 
                            class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             <i class="bi bi-rss mr-1"></i>RSS Feeds
