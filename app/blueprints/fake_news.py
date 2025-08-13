@@ -14,7 +14,13 @@ fake_news_bp = Blueprint('fake_news', __name__, url_prefix='/fake-news')
 @fake_news_bp.route('/')
 def index():
     """Main fake news detection page"""
-    return render_template('fake_news/index.html')
+    try:
+        predictor = FakeNewsPredictor()
+        model_info = predictor.get_model_info()
+    except:
+        model_info = {'error': 'Model not available'}
+        
+    return render_template('fake_news/index.html', model_info=model_info)
 
 @fake_news_bp.route('/check', methods=['GET', 'POST'])
 def check():
@@ -105,8 +111,3 @@ def about():
         model_info = {'error': 'Model not available'}
     
     return render_template('fake_news/about.html', model_info=model_info)
-
-@fake_news_bp.route('/examples')
-def examples():
-    """Examples page with sample fake and real news"""
-    return render_template('fake_news/examples.html')
