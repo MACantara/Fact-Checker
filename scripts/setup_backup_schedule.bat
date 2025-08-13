@@ -8,7 +8,7 @@ echo.
 REM Create the scheduled task
 schtasks /create ^
     /tn "Philippine News Database Backup" ^
-    /tr "C:\Programming-Projects\Fact-Checker\backup_database.bat" ^
+    /tr "C:\Programming-Projects\Fact-Checker\scripts\backup_database.bat" ^
     /sc daily ^
     /st 02:00 ^
     /ru "SYSTEM" ^

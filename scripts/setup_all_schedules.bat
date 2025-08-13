@@ -20,7 +20,7 @@ echo ----------------------------------------------------------------
 REM Create RSS update task
 schtasks /create ^
     /tn "Philippine News RSS Feed Updates" ^
-    /tr "C:\Programming-Projects\Fact-Checker\update_rss_feeds.bat" ^
+    /tr "C:\Programming-Projects\Fact-Checker\scripts\update_rss_feeds.bat" ^
     /sc minute ^
     /mo 5 ^
     /ru "SYSTEM" ^
@@ -41,7 +41,7 @@ echo ----------------------------------------------------------------
 REM Create backup task
 schtasks /create ^
     /tn "Philippine News Database Backup" ^
-    /tr "C:\Programming-Projects\Fact-Checker\backup_database.bat" ^
+    /tr "C:\Programming-Projects\Fact-Checker\scripts\backup_database.bat" ^
     /sc daily ^
     /st 02:00 ^
     /ru "SYSTEM" ^
