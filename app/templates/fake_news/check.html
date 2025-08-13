@@ -7,10 +7,13 @@
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                🔍 Fake News Detector
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                <i class="bi bi-search text-white text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-3">
+                Fake News Detector
             </h1>
-            <p class="text-gray-600">
+            <p class="text-gray-600 text-lg">
                 Analyze news content to determine if it's likely fake or real
             </p>
         </div>
@@ -29,19 +32,21 @@
         {% endwith %}
 
         <!-- Analysis Form -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
             <form method="POST" id="analysisForm">
                 <!-- Method Selection -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Analysis Method</label>
-                    <div class="flex space-x-4">
-                        <label class="flex items-center">
-                            <input type="radio" name="method" value="text" class="mr-2" checked onchange="toggleInputMethod()">
-                            <span>📝 Text Input</span>
+                <div class="mb-8">
+                    <label class="block text-sm font-semibold text-gray-700 mb-4">Analysis Method</label>
+                    <div class="flex space-x-6">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="method" value="text" class="mr-3 text-blue-600 focus:ring-blue-500" checked onchange="toggleInputMethod()">
+                            <i class="bi bi-file-text text-blue-600 mr-2"></i>
+                            <span class="font-medium">Text Input</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="method" value="url" class="mr-2" onchange="toggleInputMethod()">
-                            <span>🌐 URL Input</span>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="method" value="url" class="mr-3 text-blue-600 focus:ring-blue-500" onchange="toggleInputMethod()">
+                            <i class="bi bi-globe text-purple-600 mr-2"></i>
+                            <span class="font-medium">URL Input</span>
                         </label>
                     </div>
                 </div>
@@ -95,8 +100,9 @@
                 <div class="flex justify-center">
                     <button type="submit" 
                             id="analyzeBtn"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-200 flex items-center">
-                        <span id="btnText">🔍 Analyze Article</span>
+                            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <i class="bi bi-search mr-2"></i>
+                        <span id="btnText">Analyze Article</span>
                         <div id="spinner" class="hidden ml-2">
                             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                         </div>
@@ -106,25 +112,36 @@
         </div>
 
         <!-- Sample Text Examples -->
-        <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4">📝 Try These Examples</h3>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded border">
-                    <h4 class="font-medium text-green-600 mb-2">Example: Likely Real News</h4>
-                    <p class="text-sm text-gray-600 mb-3">
+        <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-8 border border-gray-200">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-lightbulb text-2xl text-yellow-600 mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Try These Examples</h3>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center mb-3">
+                        <i class="bi bi-check-circle text-green-600 mr-2"></i>
+                        <h4 class="font-semibold text-green-600">Example: Likely Real News</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
                         "Philippine GDP Growth Reaches 6.2% in Q3. The Philippines recorded a 6.2% gross domestic product growth in the third quarter, driven by strong consumer spending and infrastructure investments, according to the Philippine Statistics Authority."
                     </p>
-                    <button onclick="fillExample(1)" class="text-blue-600 hover:text-blue-800 text-sm underline">
+                    <button onclick="fillExample(1)" class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors duration-200">
+                        <i class="bi bi-arrow-right-circle mr-1"></i>
                         Use This Example
                     </button>
                 </div>
                 
-                <div class="bg-white p-4 rounded border">
-                    <h4 class="font-medium text-red-600 mb-2">Example: Likely Fake News</h4>
-                    <p class="text-sm text-gray-600 mb-3">
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center mb-3">
+                        <i class="bi bi-exclamation-triangle text-red-600 mr-2"></i>
+                        <h4 class="font-semibold text-red-600">Example: Likely Fake News</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
                         "Scientists Discover Cure for All Diseases. A team of researchers has discovered a miracle pill that can cure all known diseases in just 24 hours. The pill is made from a rare plant found only in the Amazon rainforest."
                     </p>
-                    <button onclick="fillExample(2)" class="text-blue-600 hover:text-blue-800 text-sm underline">
+                    <button onclick="fillExample(2)" class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors duration-200">
+                        <i class="bi bi-arrow-right-circle mr-1"></i>
                         Use This Example
                     </button>
                 </div>
@@ -184,7 +201,7 @@ document.getElementById('analysisForm').addEventListener('submit', function(e) {
     // Show loading state
     analyzeBtn.disabled = true;
     spinner.classList.remove('hidden');
-    btnText.textContent = '⏳ Analyzing...';
+    btnText.innerHTML = '<i class="bi bi-hourglass-split mr-2"></i>Analyzing...';
 });
 
 // Initialize

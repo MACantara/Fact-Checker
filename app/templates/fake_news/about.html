@@ -7,40 +7,49 @@
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                🤖 About Our Fake News Detection System
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                <i class="bi bi-shield-check text-white text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-3">
+                About Our Fake News Detection System
             </h1>
-            <p class="text-gray-600">
+            <p class="text-gray-600 text-lg">
                 Learn how our AI-powered system works to identify fake news
             </p>
         </div>
 
         <!-- Overview -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">📖 Overview</h2>
-            <p class="text-gray-700 mb-4">
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-book text-2xl text-blue-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Overview</h2>
+            </div>
+            <p class="text-gray-700 mb-4 leading-relaxed">
                 Our fake news detection system uses a logistic regression machine learning model to analyze news articles 
                 and predict whether they are likely to be fake or real. The system is trained on the WELFake dataset, 
                 which contains over 72,000 labeled news articles.
             </p>
-            <p class="text-gray-700">
+            <p class="text-gray-700 leading-relaxed">
                 The model combines natural language processing with logistic regression classification to achieve 
                 high accuracy in distinguishing between legitimate news and misinformation.
             </p>
         </div>
 
         <!-- How It Works -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">⚙️ How It Works</h2>
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-gear text-2xl text-purple-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">How It Works</h2>
+            </div>
             
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <div class="flex items-start">
-                    <div class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
-                        <span class="text-blue-600 font-bold">1</span>
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-12 h-12 flex items-center justify-center mr-6 mt-1 flex-shrink-0">
+                        <span class="text-white font-bold text-lg">1</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-2">Text Preprocessing</h3>
-                        <p class="text-gray-600">
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Text Preprocessing</h3>
+                        <p class="text-gray-600 leading-relaxed">
                             We clean and normalize the input text by removing URLs, HTML tags, special characters, 
                             and converting to lowercase. We then tokenize the text and remove common stop words.
                         </p>
@@ -48,12 +57,12 @@
                 </div>
                 
                 <div class="flex items-start">
-                    <div class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
-                        <span class="text-blue-600 font-bold">2</span>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-full w-12 h-12 flex items-center justify-center mr-6 mt-1 flex-shrink-0">
+                        <span class="text-white font-bold text-lg">2</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-2">Feature Extraction</h3>
-                        <p class="text-gray-600">
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Feature Extraction</h3>
+                        <p class="text-gray-600 leading-relaxed">
                             We use TF-IDF (Term Frequency-Inverse Document Frequency) vectorization to convert 
                             text into numerical features that machine learning algorithms can understand. This 
                             captures the importance of words in the context of the entire dataset.
@@ -62,12 +71,12 @@
                 </div>
                 
                 <div class="flex items-start">
-                    <div class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
-                        <span class="text-blue-600 font-bold">3</span>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-full w-12 h-12 flex items-center justify-center mr-6 mt-1 flex-shrink-0">
+                        <span class="text-white font-bold text-lg">3</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-2">Logistic Regression Classification</h3>
-                        <p class="text-gray-600">
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Logistic Regression Classification</h3>
+                        <p class="text-gray-600 leading-relaxed">
                             Our trained logistic regression model analyzes the text features to make a prediction. 
                             This algorithm is well-suited for binary classification tasks like fake news detection, 
                             providing interpretable probability scores for both fake and real classifications.
@@ -76,12 +85,12 @@
                 </div>
                 
                 <div class="flex items-start">
-                    <div class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
-                        <span class="text-blue-600 font-bold">4</span>
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-full w-12 h-12 flex items-center justify-center mr-6 mt-1 flex-shrink-0">
+                        <span class="text-white font-bold text-lg">4</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-2">Result Interpretation</h3>
-                        <p class="text-gray-600">
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Result Interpretation</h3>
+                        <p class="text-gray-600 leading-relaxed">
                             The model outputs a probability score for both fake and real classifications. We provide 
                             confidence levels and interpretation to help users understand the reliability of the prediction.
                         </p>
@@ -91,29 +100,68 @@
         </div>
 
         <!-- Dataset Information -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">📊 Training Dataset</h2>
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-bar-chart text-2xl text-green-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Training Dataset</h2>
+            </div>
             
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="font-semibold mb-3">WELFake Dataset</h3>
-                    <ul class="text-gray-600 space-y-2">
-                        <li>• <strong>Source:</strong> Kaggle - Fake News Classification</li>
-                        <li>• <strong>Size:</strong> 72,134 articles</li>
-                        <li>• <strong>Features:</strong> Title, Text, Label</li>
-                        <li>• <strong>Labels:</strong> 0 = Fake, 1 = Real</li>
-                        <li>• <strong>Balance:</strong> Mixed real and fake news</li>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                    <h3 class="font-semibold mb-4 text-blue-800 text-lg flex items-center">
+                        <i class="bi bi-database text-blue-600 mr-2"></i>
+                        WELFake Dataset
+                    </h3>
+                    <ul class="text-gray-700 space-y-3">
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            <strong>Source:</strong> Kaggle - Fake News Classification
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            <strong>Size:</strong> 72,134 articles
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            <strong>Features:</strong> Title, Text, Label
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            <strong>Labels:</strong> 0 = Fake, 1 = Real
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            <strong>Balance:</strong> Mixed real and fake news
+                        </li>
                     </ul>
                 </div>
                 
-                <div>
-                    <h3 class="font-semibold mb-3">Data Quality</h3>
-                    <ul class="text-gray-600 space-y-2">
-                        <li>• Diverse news topics and sources</li>
-                        <li>• Professional fact-checking labels</li>
-                        <li>• Comprehensive text preprocessing</li>
-                        <li>• Validated training/test splits</li>
-                        <li>• Cross-validation testing</li>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                    <h3 class="font-semibold mb-4 text-green-800 text-lg flex items-center">
+                        <i class="bi bi-check-circle text-green-600 mr-2"></i>
+                        Data Quality
+                    </h3>
+                    <ul class="text-gray-700 space-y-3">
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-green-600 mr-2"></i>
+                            Diverse news topics and sources
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-green-600 mr-2"></i>
+                            Professional fact-checking labels
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-green-600 mr-2"></i>
+                            Comprehensive text preprocessing
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-green-600 mr-2"></i>
+                            Validated training/test splits
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-green-600 mr-2"></i>
+                            Cross-validation testing
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -121,21 +169,26 @@
 
         <!-- Model Performance -->
         {% if model_info and not model_info.get('error') %}
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">🎯 Model Performance</h2>
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-bullseye text-2xl text-orange-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Model Performance</h2>
+            </div>
             
-            <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
                 {% if model_info.metadata %}
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <h3 class="text-sm font-medium text-gray-600 mb-1">Model Type</h3>
+                    <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                        <i class="bi bi-cpu text-blue-600 text-2xl mb-3"></i>
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Model Type</h3>
                         <div class="text-lg font-bold text-blue-600">
                             {{ model_info.metadata.get('model_type', 'Unknown').title().replace('_', ' ') }}
                         </div>
                     </div>
                     
                     {% if model_info.metadata.get('accuracy') %}
-                    <div class="text-center p-4 bg-green-50 rounded-lg">
-                        <h3 class="text-sm font-medium text-gray-600 mb-1">Accuracy</h3>
+                    <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+                        <i class="bi bi-check-circle text-green-600 text-2xl mb-3"></i>
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Accuracy</h3>
                         <div class="text-lg font-bold text-green-600">
                             {{ "%.1f"|format(model_info.metadata.accuracy * 100) }}%
                         </div>
@@ -144,8 +197,9 @@
                 {% endif %}
                 
                 {% if model_info.get('vectorizer_features') %}
-                <div class="text-center p-4 bg-purple-50 rounded-lg">
-                    <h3 class="text-sm font-medium text-gray-600 mb-1">Features</h3>
+                <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                    <i class="bi bi-gear text-purple-600 text-2xl mb-3"></i>
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Features</h3>
                     <div class="text-lg font-bold text-purple-600">
                         {{ "{:,}".format(model_info.vectorizer_features) }}
                     </div>
@@ -161,93 +215,194 @@
         {% endif %}
 
         <!-- Limitations -->
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4 text-yellow-800">⚠️ Limitations & Considerations</h2>
+        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-8 mb-8">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-exclamation-triangle text-yellow-600 text-2xl mr-3"></i>
+                <h2 class="text-2xl font-bold mb-4 text-yellow-800">Limitations & Considerations</h2>
+            </div>
             
-            <div class="text-yellow-700 space-y-3">
-                <p>
-                    <strong>Not 100% Accurate:</strong> While our model achieves high accuracy, it's not perfect. 
-                    AI systems can make mistakes, especially with nuanced or context-dependent content.
-                </p>
+            <div class="text-yellow-700 space-y-4">
+                <div class="flex items-start">
+                    <i class="bi bi-dot text-yellow-600 mr-2 mt-1"></i>
+                    <p class="leading-relaxed">
+                        <strong>Not 100% Accurate:</strong> While our model achieves high accuracy, it's not perfect. 
+                        AI systems can make mistakes, especially with nuanced or context-dependent content.
+                    </p>
+                </div>
                 
-                <p>
-                    <strong>Training Data Bias:</strong> The model's predictions are influenced by the patterns 
-                    it learned from the training data, which may not cover all types of misinformation.
-                </p>
+                <div class="flex items-start">
+                    <i class="bi bi-dot text-yellow-600 mr-2 mt-1"></i>
+                    <p class="leading-relaxed">
+                        <strong>Training Data Bias:</strong> The model's predictions are influenced by the patterns 
+                        it learned from the training data, which may not cover all types of misinformation.
+                    </p>
+                </div>
                 
-                <p>
-                    <strong>Context Matters:</strong> The model analyzes text content but may miss important 
-                    contextual factors like publication date, source credibility, or current events.
-                </p>
+                <div class="flex items-start">
+                    <i class="bi bi-dot text-yellow-600 mr-2 mt-1"></i>
+                    <p class="leading-relaxed">
+                        <strong>Context Matters:</strong> The model analyzes text content but may miss important 
+                        contextual factors like publication date, source credibility, or current events.
+                    </p>
+                </div>
                 
-                <p>
-                    <strong>Evolving Misinformation:</strong> Fake news techniques constantly evolve, and the 
-                    model may not catch the latest manipulation strategies.
-                </p>
+                <div class="flex items-start">
+                    <i class="bi bi-dot text-yellow-600 mr-2 mt-1"></i>
+                    <p class="leading-relaxed">
+                        <strong>Evolving Misinformation:</strong> Fake news techniques constantly evolve, and the 
+                        model may not catch the latest manipulation strategies.
+                    </p>
+                </div>
                 
-                <p>
-                    <strong>Human Verification Needed:</strong> Always use critical thinking and verify 
-                    information through multiple reliable sources, especially for important decisions.
-                </p>
+                <div class="flex items-start">
+                    <i class="bi bi-dot text-yellow-600 mr-2 mt-1"></i>
+                    <p class="leading-relaxed">
+                        <strong>Human Verification Needed:</strong> Always use critical thinking and verify 
+                        information through multiple reliable sources, especially for important decisions.
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- Best Practices -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">✅ Best Practices for Use</h2>
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-check-square text-2xl text-green-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Best Practices for Use</h2>
+            </div>
             
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="font-semibold mb-3 text-green-600">Do:</h3>
-                    <ul class="text-gray-600 space-y-2">
-                        <li>• Use as a screening tool for suspicious content</li>
-                        <li>• Combine with other fact-checking methods</li>
-                        <li>• Consider the confidence score</li>
-                        <li>• Verify through multiple sources</li>
-                        <li>• Check the original source and publication</li>
-                        <li>• Use critical thinking and media literacy</li>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                    <h3 class="font-semibold mb-4 text-green-600 text-lg flex items-center">
+                        <i class="bi bi-check-circle text-green-600 mr-2"></i>
+                        Do:
+                    </h3>
+                    <ul class="text-gray-700 space-y-3">
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Use as a screening tool for suspicious content
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Combine with other fact-checking methods
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Consider the confidence score
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Verify through multiple sources
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Check the original source and publication
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-green-600 mr-2 mt-1"></i>
+                            Use critical thinking and media literacy
+                        </li>
                     </ul>
                 </div>
                 
-                <div>
-                    <h3 class="font-semibold mb-3 text-red-600">Don't:</h3>
-                    <ul class="text-gray-600 space-y-2">
-                        <li>• Rely solely on the AI prediction</li>
-                        <li>• Ignore low confidence scores</li>
-                        <li>• Skip fact-checking for important claims</li>
-                        <li>• Use for legal or medical decisions</li>
-                        <li>• Assume 100% accuracy</li>
-                        <li>• Ignore source credibility</li>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border border-red-200">
+                    <h3 class="font-semibold mb-4 text-red-600 text-lg flex items-center">
+                        <i class="bi bi-x-circle text-red-600 mr-2"></i>
+                        Don't:
+                    </h3>
+                    <ul class="text-gray-700 space-y-3">
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-red-600 mr-2 mt-1"></i>
+                            Rely solely on the AI prediction
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-red-600 mr-2 mt-1"></i>
+                            Make important decisions based only on this tool
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-red-600 mr-2 mt-1"></i>
+                            Ignore the context and source of information
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-red-600 mr-2 mt-1"></i>
+                            Share content without additional verification
+                        </li>
+                        <li class="flex items-start">
+                            <i class="bi bi-dot text-red-600 mr-2 mt-1"></i>
+                            Assume the model is always correct
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <!-- Technical Details -->
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-            <h2 class="text-2xl font-bold mb-4">🔧 Technical Implementation</h2>
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-tools text-2xl text-blue-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Technical Implementation</h2>
+            </div>
             
-            <div class="space-y-4 text-gray-700">
+            <div class="space-y-6 text-gray-700">
                 <div>
-                    <h3 class="font-semibold mb-2">Technologies Used:</h3>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li>Python 3.12 with scikit-learn for machine learning</li>
-                        <li>NLTK for natural language processing</li>
-                        <li>TF-IDF vectorization for feature extraction</li>
-                        <li>Logistic Regression for classification</li>
-                        <li>Flask for web API and user interface</li>
-                        <li>BeautifulSoup for URL content extraction</li>
+                    <h3 class="font-semibold mb-3 text-gray-900 flex items-center">
+                        <i class="bi bi-code-square text-blue-600 mr-2"></i>
+                        Technologies Used:
+                    </h3>
+                    <ul class="list-none space-y-2">
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            Python 3.12 with scikit-learn for machine learning
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            NLTK for natural language processing
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            TF-IDF vectorization for feature extraction
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            Logistic Regression for classification
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            Flask for web API and user interface
+                        </li>
+                        <li class="flex items-center">
+                            <i class="bi bi-dot text-blue-600 mr-2"></i>
+                            BeautifulSoup for URL content extraction
+                        </li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="font-semibold mb-2">Model Pipeline:</h3>
-                    <ol class="list-decimal list-inside space-y-1">
-                        <li>Text preprocessing (cleaning, normalization)</li>
-                        <li>TF-IDF vectorization (up to 10,000 features)</li>
-                        <li>Machine learning classification</li>
-                        <li>Probability calibration and confidence scoring</li>
-                        <li>Result interpretation and explanation</li>
+                    <h3 class="font-semibold mb-3 text-gray-900 flex items-center">
+                        <i class="bi bi-diagram-3 text-green-600 mr-2"></i>
+                        Model Pipeline:
+                    </h3>
+                    <ol class="list-none space-y-2">
+                        <li class="flex items-center">
+                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+                            Text preprocessing (cleaning, normalization)
+                        </li>
+                        <li class="flex items-center">
+                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+                            TF-IDF vectorization (up to 10,000 features)
+                        </li>
+                        <li class="flex items-center">
+                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
+                            Machine learning classification
+                        </li>
+                        <li class="flex items-center">
+                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">4</span>
+                            Probability calibration and confidence scoring
+                        </li>
+                        <li class="flex items-center">
+                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">5</span>
+                            Result interpretation and explanation
+                        </li>
                     </ol>
                 </div>
             </div>
@@ -255,19 +410,25 @@
 
         <!-- Links -->
         <div class="text-center">
-            <h2 class="text-xl font-bold mb-4">🔗 Related Resources</h2>
-            <div class="space-x-4">
+            <div class="flex items-center justify-center mb-6">
+                <i class="bi bi-link-45deg text-2xl text-blue-600 mr-3"></i>
+                <h2 class="text-xl font-bold text-gray-900">Related Resources</h2>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4">
                 <a href="{{ url_for('fake_news.check') }}" 
-                   class="text-blue-600 hover:text-blue-800 underline">
+                   class="inline-flex items-center text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="bi bi-search mr-2"></i>
                     Try the Detector
                 </a>
                 <a href="https://www.kaggle.com/datasets/saurabhshahane/fake-news-classification" 
                    target="_blank" rel="noopener noreferrer"
-                   class="text-blue-600 hover:text-blue-800 underline">
+                   class="inline-flex items-center text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="bi bi-database mr-2"></i>
                     Dataset Source
                 </a>
                 <a href="{{ url_for('main.index') }}" 
-                   class="text-blue-600 hover:text-blue-800 underline">
+                   class="inline-flex items-center text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="bi bi-house mr-2"></i>
                     Search News
                 </a>
             </div>
