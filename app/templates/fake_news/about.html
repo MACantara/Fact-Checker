@@ -25,13 +25,14 @@
                 <h2 class="text-2xl font-bold text-gray-900">Overview</h2>
             </div>
             <p class="text-gray-700 mb-4 leading-relaxed">
-                Our fake news detection system uses a logistic regression machine learning model to analyze news articles 
-                and predict whether they are likely to be fake or real. The system is trained on the WELFake dataset, 
-                which contains over 72,000 labeled news articles.
+                Our advanced fake news detection system uses a hybrid approach combining state-of-the-art AI models:
+                <strong>DistilBERT</strong> as the primary model with <strong>Logistic Regression</strong> as a reliable fallback.
+                The system is optimized for GPU acceleration while maintaining compatibility with CPU-only environments.
             </p>
             <p class="text-gray-700 leading-relaxed">
-                The model combines natural language processing with logistic regression classification to achieve 
-                high accuracy in distinguishing between legitimate news and misinformation.
+                DistilBERT provides superior understanding of language context and nuance, while the logistic regression
+                model ensures reliable operation when GPU resources are unavailable. Both models are trained on the 
+                same WELFake dataset containing over 72,000 labeled news articles.
             </p>
         </div>
 
@@ -48,10 +49,11 @@
                         <span class="text-white font-bold text-lg">1</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Text Preprocessing</h3>
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Model Selection & GPU Optimization</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            We clean and normalize the input text by removing URLs, HTML tags, special characters, 
-                            and converting to lowercase. We then tokenize the text and remove common stop words.
+                            Our system automatically detects available hardware and selects the best model. If a GPU is available,
+                            it loads DistilBERT for advanced language understanding. Otherwise, it uses the fast and reliable
+                            Logistic Regression model. GPU training is optimized for NVIDIA GTX 1050 with 2GB VRAM.
                         </p>
                     </div>
                 </div>
@@ -61,11 +63,11 @@
                         <span class="text-white font-bold text-lg">2</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Feature Extraction</h3>
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Text Processing & Tokenization</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            We use TF-IDF (Term Frequency-Inverse Document Frequency) vectorization to convert 
-                            text into numerical features that machine learning algorithms can understand. This 
-                            captures the importance of words in the context of the entire dataset.
+                            For DistilBERT: We use advanced BERT tokenization that preserves word relationships and context.
+                            For Logistic Regression: We clean and normalize text, remove URLs/HTML, tokenize, and remove stop words.
+                            Both approaches optimize the input for their respective model architectures.
                         </p>
                     </div>
                 </div>
@@ -75,11 +77,11 @@
                         <span class="text-white font-bold text-lg">3</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Logistic Regression Classification</h3>
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">AI Model Analysis</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            Our trained logistic regression model analyzes the text features to make a prediction. 
-                            This algorithm is well-suited for binary classification tasks like fake news detection, 
-                            providing interpretable probability scores for both fake and real classifications.
+                            <strong>DistilBERT:</strong> Uses transformer attention mechanisms to understand context, semantics, and linguistic patterns.
+                            Provides ~66M parameters for deep language understanding.
+                            <strong>Logistic Regression:</strong> Uses TF-IDF features and statistical analysis for fast, interpretable predictions.
                         </p>
                     </div>
                 </div>
@@ -89,10 +91,11 @@
                         <span class="text-white font-bold text-lg">4</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Result Interpretation</h3>
+                        <h3 class="font-semibold mb-3 text-gray-900 text-lg">Prediction & Confidence Scoring</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            The model outputs a probability score for both fake and real classifications. We provide 
-                            confidence levels and interpretation to help users understand the reliability of the prediction.
+                            Both models output probability scores for fake/real classification. DistilBERT typically provides
+                            higher accuracy and more nuanced confidence scores. The system includes automatic fallback - if
+                            DistilBERT fails, it seamlessly switches to Logistic Regression for reliable results.
                         </p>
                     </div>
                 </div>
@@ -175,41 +178,151 @@
                 <h2 class="text-2xl font-bold text-gray-900">Model Performance</h2>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-6 mb-8">
-                {% if model_info.metadata %}
-                    <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                        <i class="bi bi-cpu text-blue-600 text-2xl mb-3"></i>
-                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Model Type</h3>
-                        <div class="text-lg font-bold text-blue-600">
-                            {{ model_info.metadata.get('model_type', 'Unknown').title().replace('_', ' ') }}
+            <!-- Active Model Status -->
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                    <i class="bi bi-cpu text-blue-600 mr-2"></i>
+                    Current System Status
+                </h3>
+                <div class="grid md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="font-medium text-gray-700">Active Model:</span>
+                        <div class="text-blue-600 font-bold">
+                            {% if model_info.active_model == 'distilbert' %}
+                                🚀 DistilBERT (Primary)
+                            {% elif model_info.active_model == 'logistic_regression' %}
+                                ⚡ Logistic Regression
+                            {% else %}
+                                ❌ No Model Active
+                            {% endif %}
                         </div>
                     </div>
-                    
-                    {% if model_info.metadata.get('accuracy') %}
-                    <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                        <i class="bi bi-check-circle text-green-600 text-2xl mb-3"></i>
-                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Accuracy</h3>
-                        <div class="text-lg font-bold text-green-600">
-                            {{ "%.1f"|format(model_info.metadata.accuracy * 100) }}%
-                        </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Device:</span>
+                        <div class="text-green-600 font-bold">{{ model_info.device }}</div>
                     </div>
-                    {% endif %}
-                {% endif %}
-                
-                {% if model_info.get('vectorizer_features') %}
-                <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
-                    <i class="bi bi-gear text-purple-600 text-2xl mb-3"></i>
-                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Features</h3>
-                    <div class="text-lg font-bold text-purple-600">
-                        {{ "{:,}".format(model_info.vectorizer_features) }}
+                    <div>
+                        <span class="font-medium text-gray-700">Status:</span>
+                        <div class="text-purple-600 font-bold">{{ model_info.status }}</div>
                     </div>
                 </div>
-                {% endif %}
             </div>
             
-            <div class="text-sm text-gray-600">
-                <p><strong>Training Process:</strong> We trained a logistic regression model using TF-IDF features and selected optimal hyperparameters based on accuracy and cross-validation scores.</p>
-                <p class="mt-2"><strong>Validation:</strong> The model is tested on unseen data to ensure it generalizes well to new articles.</p>
+            <!-- Model Cards -->
+            {% if model_info.models_available %}
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                {% for model in model_info.models_available %}
+                <div class="bg-gradient-to-br 
+                    {% if model.name == 'DistilBERT' %}from-blue-50 to-blue-100 border border-blue-200{% else %}from-green-50 to-green-100 border border-green-200{% endif %} 
+                    rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg 
+                            {% if model.name == 'DistilBERT' %}text-blue-800{% else %}text-green-800{% endif %}">
+                            {% if model.name == 'DistilBERT' %}
+                                🤖 {{ model.name }}
+                            {% else %}
+                                📊 {{ model.name }}
+                            {% endif %}
+                        </h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium
+                            {% if model.status == 'loaded' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ model.status|title }}
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        {% if model.metadata and model.metadata.get('accuracy') %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Accuracy:</span>
+                            <span class="font-bold {% if model.name == 'DistilBERT' %}text-blue-600{% else %}text-green-600{% endif %}">
+                                {{ "%.1f"|format(model.metadata.accuracy * 100) }}%
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if model.name == 'DistilBERT' %}
+                            {% if model.parameters %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Parameters:</span>
+                                <span class="font-bold text-blue-600">{{ model.parameters }}</span>
+                            </div>
+                            {% endif %}
+                            {% if model.max_length %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Max Length:</span>
+                                <span class="font-bold text-blue-600">{{ model.max_length }} tokens</span>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            {% if model.vectorizer_features %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Features:</span>
+                                <span class="font-bold text-green-600">{{ "{:,}".format(model.vectorizer_features) }}</span>
+                            </div>
+                            {% endif %}
+                            {% if model.pipeline_steps %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Pipeline:</span>
+                                <span class="font-bold text-green-600">{{ model.pipeline_steps|join(' → ')|title }}</span>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <div class="text-xs text-gray-500 mt-3">
+                            {% if model.name == 'DistilBERT' %}
+                                Advanced transformer model with attention mechanisms for deep language understanding
+                            {% else %}
+                                Fast statistical model with TF-IDF features for reliable classification
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Technical Details -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                    <i class="bi bi-info-circle text-blue-600 mr-2"></i>
+                    System Configuration
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <span class="font-medium">DistilBERT Available:</span>
+                        <span class="ml-2">
+                            {% if model_info.distilbert_available %}
+                                ✅ Yes
+                            {% else %}
+                                ❌ No (install PyTorch + Transformers)
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="font-medium">GPU Support:</span>
+                        <span class="ml-2">
+                            {% if 'cuda' in model_info.device %}
+                                🚀 CUDA Enabled
+                            {% else %}
+                                💻 CPU Only
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Fallback System:</span>
+                        <span class="ml-2">
+                            {% if model_info.fallback_model %}
+                                ✅ {{ model_info.fallback_model.name }} Ready
+                            {% else %}
+                                ⚡ Primary Only
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Models Loaded:</span>
+                        <span class="ml-2">{{ model_info.models_available|length }} of 2</span>
+                    </div>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -349,61 +462,127 @@
                         <i class="bi bi-code-square text-blue-600 mr-2"></i>
                         Technologies Used:
                     </h3>
-                    <ul class="list-none space-y-2">
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            Python 3.12 with scikit-learn for machine learning
-                        </li>
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            NLTK for natural language processing
-                        </li>
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            TF-IDF vectorization for feature extraction
-                        </li>
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            Logistic Regression for classification
-                        </li>
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            Flask for web API and user interface
-                        </li>
-                        <li class="flex items-center">
-                            <i class="bi bi-dot text-blue-600 mr-2"></i>
-                            BeautifulSoup for URL content extraction
-                        </li>
-                    </ul>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 mb-2">🤖 DistilBERT Model</h4>
+                            <ul class="list-none space-y-2 text-sm">
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-blue-600 mr-2"></i>
+                                    PyTorch 2.1+ with CUDA support
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-blue-600 mr-2"></i>
+                                    HuggingFace Transformers library
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-blue-600 mr-2"></i>
+                                    DistilBERT-base-uncased (66M parameters)
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-blue-600 mr-2"></i>
+                                    Optimized for GTX 1050 (2GB VRAM)
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-blue-600 mr-2"></i>
+                                    Gradient checkpointing for memory efficiency
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-800 mb-2">📊 Logistic Regression</h4>
+                            <ul class="list-none space-y-2 text-sm">
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-green-600 mr-2"></i>
+                                    Python 3.12 with scikit-learn
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-green-600 mr-2"></i>
+                                    NLTK for text preprocessing
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-green-600 mr-2"></i>
+                                    TF-IDF vectorization (10K features)
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-green-600 mr-2"></i>
+                                    Fast CPU inference
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bi bi-dot text-green-600 mr-2"></i>
+                                    Cross-validated hyperparameters
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <div>
                     <h3 class="font-semibold mb-3 text-gray-900 flex items-center">
                         <i class="bi bi-diagram-3 text-green-600 mr-2"></i>
-                        Model Pipeline:
+                        Hybrid System Pipeline:
                     </h3>
-                    <ol class="list-none space-y-2">
-                        <li class="flex items-center">
-                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
-                            Text preprocessing (cleaning, normalization)
-                        </li>
-                        <li class="flex items-center">
-                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
-                            TF-IDF vectorization (up to 10,000 features)
-                        </li>
-                        <li class="flex items-center">
-                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
-                            Machine learning classification
-                        </li>
-                        <li class="flex items-center">
-                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">4</span>
-                            Probability calibration and confidence scoring
-                        </li>
-                        <li class="flex items-center">
-                            <span class="bg-green-100 text-green-800 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3">5</span>
-                            Result interpretation and explanation
-                        </li>
-                    </ol>
+                    <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-6">
+                        <ol class="list-none space-y-3">
+                            <li class="flex items-center">
+                                <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4">1</span>
+                                <div>
+                                    <span class="font-semibold">Hardware Detection:</span> Check for CUDA GPU availability and memory
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4">2</span>
+                                <div>
+                                    <span class="font-semibold">Model Loading:</span> Load DistilBERT (primary) and/or Logistic Regression (fallback)
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4">3</span>
+                                <div>
+                                    <span class="font-semibold">Text Processing:</span> BERT tokenization or traditional NLP preprocessing
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4">4</span>
+                                <div>
+                                    <span class="font-semibold">Prediction:</span> Primary model inference with automatic fallback if needed
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4">5</span>
+                                <div>
+                                    <span class="font-semibold">Result Processing:</span> Confidence scoring and interpretation with model attribution
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-3 text-gray-900 flex items-center">
+                        <i class="bi bi-gpu-card text-purple-600 mr-2"></i>
+                        GPU Optimization:
+                    </h3>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <ul class="list-none space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <i class="bi bi-dot text-purple-600 mr-2"></i>
+                                <strong>GTX 1050 Specific:</strong> Batch size 4-8, reduced sequence length (128-256 tokens)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="bi bi-dot text-purple-600 mr-2"></i>
+                                <strong>Memory Management:</strong> Gradient accumulation, automatic cache clearing
+                            </li>
+                            <li class="flex items-center">
+                                <i class="bi bi-dot text-purple-600 mr-2"></i>
+                                <strong>Mixed Precision:</strong> FP16 training where supported for 2x memory savings
+                            </li>
+                            <li class="flex items-center">
+                                <i class="bi bi-dot text-purple-600 mr-2"></i>
+                                <strong>Graceful Fallback:</strong> Automatic CPU mode if GPU memory insufficient
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 """
-Fake News Prediction Service
-Provides functionality to predict if news content is fake or real
+Hybrid Fake News Prediction Service
+DistilBERT as primary model with Logistic Regression fallback
+Optimized for NVIDIA GTX 1050 (2GB VRAM)
 """
 
 import joblib
@@ -17,25 +18,70 @@ from nltk.stem import PorterStemmer
 import logging
 from typing import Dict, Any, Optional, Tuple
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
+
+# DistilBERT imports (with graceful fallback)
+try:
+    import torch
+    from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+    DISTILBERT_AVAILABLE = True
+except ImportError:
+    DISTILBERT_AVAILABLE = False
+    logger.warning("DistilBERT dependencies not found. Using Logistic Regression only.")
 
 logger = logging.getLogger(__name__)
 
 class FakeNewsPredictor:
-    """Predict if news content is fake or real"""
+    """Hybrid predictor using DistilBERT (primary) and Logistic Regression (fallback)"""
     
-    def __init__(self, model_path=None):
-        self.model_path = model_path or Path("app/ml/models/fake_news_detector.joblib")
-        self.metadata_path = Path("app/ml/models/model_metadata.joblib")
+    def __init__(self, model_path=None, use_distilbert=True):
+        # Model paths
+        self.lr_model_path = model_path or Path("app/ml/models/fake_news_detector.joblib")
+        self.lr_metadata_path = Path("app/ml/models/model_metadata.joblib")
+        self.distilbert_model_path = Path("app/ml/models/distilbert_fake_news_detector.pt")
+        self.distilbert_tokenizer_path = Path("app/ml/models/distilbert_tokenizer")
+        self.distilbert_metadata_path = Path("app/ml/models/distilbert_metadata.joblib")
+        
+        # Model preference
+        self.use_distilbert = use_distilbert and DISTILBERT_AVAILABLE
+        
+        # Device setup
+        self.device = self._setup_device()
         
         # Initialize NLTK components
         self._download_nltk_data()
         self.stemmer = PorterStemmer()
         self.stop_words = set(stopwords.words('english'))
         
-        # Load model
-        self.model = None
-        self.metadata = None
-        self.load_model()
+        # Model containers
+        self.lr_model = None
+        self.lr_metadata = None
+        self.distilbert_model = None
+        self.distilbert_tokenizer = None
+        self.distilbert_metadata = None
+        
+        # Load models
+        self.load_models()
+        
+        # Determine active model
+        self.active_model = self._determine_active_model()
+        logger.info(f"Active model: {self.active_model}")
+    
+    def _setup_device(self):
+        """Setup device for DistilBERT inference"""
+        if not DISTILBERT_AVAILABLE:
+            return None
+            
+        if torch.cuda.is_available():
+            device = torch.device('cuda')
+            torch.cuda.empty_cache()
+            logger.info(f"GPU available for inference: {torch.cuda.get_device_name(0)}")
+        else:
+            device = torch.device('cpu')
+            logger.info("Using CPU for DistilBERT inference")
+        
+        return device
     
     def _download_nltk_data(self):
         """Download required NLTK data"""
@@ -49,24 +95,82 @@ class FakeNewsPredictor:
         except LookupError:
             nltk.download('stopwords')
     
-    def load_model(self):
-        """Load the trained model"""
+    def load_models(self):
+        """Load all available models"""
+        # Load Logistic Regression model (fallback)
+        self._load_lr_model()
+        
+        # Load DistilBERT model (primary)
+        if self.use_distilbert:
+            self._load_distilbert_model()
+    
+    def _load_lr_model(self):
+        """Load Logistic Regression model"""
         try:
-            if self.model_path.exists():
-                self.model = joblib.load(self.model_path)
-                logger.info(f"Model loaded from {self.model_path}")
+            if self.lr_model_path.exists():
+                self.lr_model = joblib.load(self.lr_model_path)
+                logger.info(f"Logistic Regression model loaded from {self.lr_model_path}")
                 
-                if self.metadata_path.exists():
-                    self.metadata = joblib.load(self.metadata_path)
-                    logger.info(f"Model metadata loaded from {self.metadata_path}")
-                else:
-                    logger.warning("Model metadata not found")
+                if self.lr_metadata_path.exists():
+                    self.lr_metadata = joblib.load(self.lr_metadata_path)
+                    logger.info(f"LR model metadata loaded")
             else:
-                logger.error(f"Model file not found at {self.model_path}")
-                raise FileNotFoundError(f"Model file not found: {self.model_path}")
+                logger.warning(f"Logistic Regression model not found at {self.lr_model_path}")
         except Exception as e:
-            logger.error(f"Error loading model: {e}")
-            raise
+            logger.error(f"Error loading Logistic Regression model: {e}")
+    
+    def _load_distilbert_model(self):
+        """Load DistilBERT model"""
+        if not DISTILBERT_AVAILABLE:
+            logger.warning("DistilBERT dependencies not available")
+            return
+            
+        try:
+            # Load tokenizer
+            if self.distilbert_tokenizer_path.exists():
+                self.distilbert_tokenizer = DistilBertTokenizer.from_pretrained(
+                    str(self.distilbert_tokenizer_path)
+                )
+                logger.info(f"DistilBERT tokenizer loaded")
+            
+            # Load model
+            if self.distilbert_model_path.exists():
+                checkpoint = torch.load(self.distilbert_model_path, map_location=self.device)
+                
+                # Initialize model
+                self.distilbert_model = DistilBertForSequenceClassification.from_pretrained(
+                    checkpoint['model_name'],
+                    num_labels=2
+                )
+                
+                # Load trained weights
+                self.distilbert_model.load_state_dict(checkpoint['model_state_dict'])
+                self.distilbert_model.to(self.device)
+                self.distilbert_model.eval()
+                
+                logger.info(f"DistilBERT model loaded with accuracy: {checkpoint['accuracy']:.4f}")
+                
+                # Load metadata
+                if self.distilbert_metadata_path.exists():
+                    self.distilbert_metadata = joblib.load(self.distilbert_metadata_path)
+                    logger.info(f"DistilBERT metadata loaded")
+                    
+            else:
+                logger.warning(f"DistilBERT model not found at {self.distilbert_model_path}")
+                
+        except Exception as e:
+            logger.error(f"Error loading DistilBERT model: {e}")
+            self.distilbert_model = None
+            self.distilbert_tokenizer = None
+    
+    def _determine_active_model(self):
+        """Determine which model to use as primary"""
+        if self.distilbert_model is not None and self.distilbert_tokenizer is not None:
+            return "distilbert"
+        elif self.lr_model is not None:
+            return "logistic_regression"
+        else:
+            return "none"
     
     def preprocess_text(self, text: str) -> str:
         """Clean and preprocess text data (same as training)"""
@@ -172,9 +276,7 @@ class FakeNewsPredictor:
             raise ValueError(f"Could not parse content from URL: {e}")
     
     def predict_text(self, title: str = "", content: str = "") -> Dict[str, Any]:
-        """Predict if given text is fake or real news"""
-        if not self.model:
-            raise RuntimeError("Model not loaded. Please train the model first.")
+        """Predict if given text is fake or real news using the best available model"""
         
         # Combine title and content
         combined_text = f"{title} {content}".strip()
@@ -182,57 +284,137 @@ class FakeNewsPredictor:
         if not combined_text:
             raise ValueError("No text provided for prediction")
         
-        # Preprocess text
-        processed_text = self.preprocess_text(combined_text)
+        # Try DistilBERT first (if available)
+        if self.active_model == "distilbert":
+            try:
+                result = self._predict_with_distilbert(combined_text)
+                result['model_used'] = 'distilbert'
+                result['fallback_used'] = False
+                return result
+            except Exception as e:
+                logger.warning(f"DistilBERT prediction failed: {e}. Falling back to Logistic Regression.")
+                
+        # Fallback to Logistic Regression
+        if self.lr_model is not None:
+            try:
+                result = self._predict_with_lr(combined_text)
+                result['model_used'] = 'logistic_regression'
+                result['fallback_used'] = (self.active_model == "distilbert")
+                return result
+            except Exception as e:
+                logger.error(f"Logistic Regression prediction also failed: {e}")
+                
+        raise RuntimeError("No working models available for prediction")
+    
+    def _predict_with_distilbert(self, text: str) -> Dict[str, Any]:
+        """Predict using DistilBERT model"""
+        if self.distilbert_model is None or self.distilbert_tokenizer is None:
+            raise RuntimeError("DistilBERT model not loaded")
+        
+        # Get max length from metadata or use default
+        max_length = 256
+        if self.distilbert_metadata:
+            max_length = self.distilbert_metadata.get('max_length', 256)
+        
+        # Tokenize text
+        encoding = self.distilbert_tokenizer(
+            text,
+            truncation=True,
+            padding='max_length',
+            max_length=max_length,
+            return_tensors='pt'
+        )
+        
+        # Move to device
+        input_ids = encoding['input_ids'].to(self.device)
+        attention_mask = encoding['attention_mask'].to(self.device)
+        
+        # Predict
+        with torch.no_grad():
+            outputs = self.distilbert_model(
+                input_ids=input_ids,
+                attention_mask=attention_mask
+            )
+            
+            logits = outputs.logits
+            probabilities = torch.nn.functional.softmax(logits, dim=-1)
+            prediction = torch.argmax(logits, dim=-1).item()
+            
+            # Convert to numpy for JSON serialization
+            fake_prob = float(probabilities[0][0].cpu())
+            real_prob = float(probabilities[0][1].cpu())
+        
+        # Calculate confidence and create result
+        confidence = max(fake_prob, real_prob)
+        label = "Real" if prediction == 1 else "Fake"
+        
+        result = {
+            'prediction': label,
+            'confidence': confidence,
+            'fake_probability': fake_prob,
+            'real_probability': real_prob,
+            'reliability_score': confidence,
+            'text_length': len(text),
+            'model_info': self.distilbert_metadata or {}
+        }
+        
+        # Add interpretation
+        if confidence > 0.9:
+            result['interpretation'] = f"Very high confidence: This appears to be {label.upper()} news"
+        elif confidence > 0.8:
+            result['interpretation'] = f"High confidence: This appears to be {label.upper()} news"
+        elif confidence > 0.6:
+            result['interpretation'] = f"Moderate confidence: This likely appears to be {label.upper()} news"
+        else:
+            result['interpretation'] = "Low confidence: Uncertain classification - manual review recommended"
+        
+        return result
+    
+    def _predict_with_lr(self, text: str) -> Dict[str, Any]:
+        """Predict using Logistic Regression model (fallback)"""
+        if self.lr_model is None:
+            raise RuntimeError("Logistic Regression model not loaded")
+        
+        # Preprocess text (same as training)
+        processed_text = self.preprocess_text(text)
         
         if not processed_text:
             raise ValueError("Text contains no meaningful content after preprocessing")
         
-        try:
-            # Make prediction
-            prediction = self.model.predict([processed_text])[0]
-            prediction_proba = self.model.predict_proba([processed_text])[0]
-            
-            # Calculate confidence
-            confidence = float(max(prediction_proba))
-            
-            # Determine label
-            label = "Real" if prediction == 1 else "Fake"
-            
-            # Calculate reliability score (confidence adjusted for class balance)
-            fake_prob = float(prediction_proba[0])
-            real_prob = float(prediction_proba[1])
-            
-            result = {
-                'prediction': label,
-                'confidence': confidence,
-                'fake_probability': fake_prob,
-                'real_probability': real_prob,
-                'reliability_score': confidence,
-                'text_length': len(combined_text),
-                'processed_text_length': len(processed_text),
-                'model_info': self.metadata if self.metadata else {}
-            }
-            
-            # Add interpretation
-            if confidence > 0.8:
-                if label == "Fake":
-                    result['interpretation'] = "High confidence: This appears to be FAKE news"
-                else:
-                    result['interpretation'] = "High confidence: This appears to be REAL news"
-            elif confidence > 0.6:
-                if label == "Fake":
-                    result['interpretation'] = "Moderate confidence: This likely appears to be FAKE news"
-                else:
-                    result['interpretation'] = "Moderate confidence: This likely appears to be REAL news"
-            else:
-                result['interpretation'] = "Low confidence: Uncertain classification - manual review recommended"
-            
-            return result
-            
-        except Exception as e:
-            logger.error(f"Error during prediction: {e}")
-            raise RuntimeError(f"Prediction failed: {e}")
+        # Make prediction
+        prediction = self.lr_model.predict([processed_text])[0]
+        prediction_proba = self.lr_model.predict_proba([processed_text])[0]
+        
+        # Calculate confidence
+        confidence = float(max(prediction_proba))
+        
+        # Determine label
+        label = "Real" if prediction == 1 else "Fake"
+        
+        # Calculate reliability score
+        fake_prob = float(prediction_proba[0])
+        real_prob = float(prediction_proba[1])
+        
+        result = {
+            'prediction': label,
+            'confidence': confidence,
+            'fake_probability': fake_prob,
+            'real_probability': real_prob,
+            'reliability_score': confidence,
+            'text_length': len(text),
+            'processed_text_length': len(processed_text),
+            'model_info': self.lr_metadata or {}
+        }
+        
+        # Add interpretation
+        if confidence > 0.8:
+            result['interpretation'] = f"High confidence: This appears to be {label.upper()} news"
+        elif confidence > 0.6:
+            result['interpretation'] = f"Moderate confidence: This likely appears to be {label.upper()} news"
+        else:
+            result['interpretation'] = "Low confidence: Uncertain classification - manual review recommended"
+        
+        return result
     
     def predict_url(self, url: str) -> Dict[str, Any]:
         """Predict if content from a URL is fake or real news"""
@@ -284,33 +466,80 @@ class FakeNewsPredictor:
         return results
     
     def get_model_info(self) -> Dict[str, Any]:
-        """Get information about the loaded model"""
-        if not self.model:
-            return {'error': 'No model loaded'}
-        
+        """Get comprehensive information about all loaded models"""
         info = {
-            'model_loaded': True,
-            'model_path': str(self.model_path),
-            'metadata': self.metadata if self.metadata else {}
+            'active_model': self.active_model,
+            'models_available': [],
+            'distilbert_available': DISTILBERT_AVAILABLE,
+            'device': str(self.device) if self.device else 'N/A'
         }
         
-        # Try to get pipeline info
-        try:
-            if hasattr(self.model, 'steps'):
-                info['pipeline_steps'] = [step[0] for step in self.model.steps]
-                
-                # Get vectorizer info
-                if 'tfidf' in dict(self.model.steps):
-                    vectorizer = self.model.named_steps['tfidf']
-                    info['vectorizer_features'] = getattr(vectorizer, 'max_features', None)
-                    info['vectorizer_ngram_range'] = getattr(vectorizer, 'ngram_range', None)
-                
-                # Get classifier info
-                if 'classifier' in dict(self.model.steps):
-                    classifier = self.model.named_steps['classifier']
-                    info['classifier_type'] = type(classifier).__name__
-        except Exception as e:
-            logger.warning(f"Could not extract pipeline info: {e}")
+        # DistilBERT info
+        if self.distilbert_model is not None:
+            distilbert_info = {
+                'name': 'DistilBERT',
+                'type': 'transformer',
+                'status': 'loaded',
+                'metadata': self.distilbert_metadata or {}
+            }
+            
+            if self.distilbert_metadata:
+                distilbert_info.update({
+                    'accuracy': self.distilbert_metadata.get('accuracy', 'Unknown'),
+                    'device_trained': self.distilbert_metadata.get('device_used', 'Unknown'),
+                    'parameters': '~66M (DistilBERT-base)',
+                    'max_length': self.distilbert_metadata.get('max_length', 256)
+                })
+            
+            info['models_available'].append(distilbert_info)
+            info['primary_model'] = distilbert_info
+        
+        # Logistic Regression info
+        if self.lr_model is not None:
+            lr_info = {
+                'name': 'Logistic Regression',
+                'type': 'traditional_ml',
+                'status': 'loaded',
+                'metadata': self.lr_metadata or {}
+            }
+            
+            # Get pipeline info
+            try:
+                if hasattr(self.lr_model, 'steps'):
+                    lr_info['pipeline_steps'] = [step[0] for step in self.lr_model.steps]
+                    
+                    # Get vectorizer info
+                    if 'tfidf' in dict(self.lr_model.steps):
+                        vectorizer = self.lr_model.named_steps['tfidf']
+                        lr_info['vectorizer_features'] = getattr(vectorizer, 'max_features', None)
+                        lr_info['vectorizer_ngram_range'] = getattr(vectorizer, 'ngram_range', None)
+                    
+                    # Get classifier info
+                    if 'classifier' in dict(self.lr_model.steps):
+                        classifier = self.lr_model.named_steps['classifier']
+                        lr_info['classifier_type'] = type(classifier).__name__
+            except Exception as e:
+                logger.warning(f"Could not extract LR pipeline info: {e}")
+            
+            info['models_available'].append(lr_info)
+            
+            # Set as fallback or primary
+            if self.active_model == 'logistic_regression':
+                info['primary_model'] = lr_info
+            else:
+                info['fallback_model'] = lr_info
+        
+        # Overall status
+        if not info['models_available']:
+            info['status'] = 'No models loaded'
+            info['error'] = 'No working models found'
+        elif self.active_model == 'distilbert':
+            info['status'] = 'DistilBERT active with LR fallback'
+        elif self.active_model == 'logistic_regression':
+            info['status'] = 'Logistic Regression only'
+        else:
+            info['status'] = 'No working models'
+            info['error'] = 'Models loaded but not functional'
         
         return info
 
