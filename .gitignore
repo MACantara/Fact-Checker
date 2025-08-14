@@ -105,4 +105,6 @@ yarn-error.log*
 datasets/
 
 # Models
-ml/models/
+app/ml/models/
+*.joblib
+*.pt
