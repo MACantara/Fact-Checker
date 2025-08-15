@@ -39,16 +39,41 @@ The application aggregates news from 85 leading Philippine news sources includin
 - Interaksyon
 - And 75+ more regional and national sources
 
-## Machine Learning Model
+## 🤖 Machine Learning Models
 
-Our fake news detection system uses:
+Our hybrid fake news detection system combines two powerful models for optimal performance:
 
-- **Dataset**: WELFake Dataset with 72,134 labeled articles ([Kaggle Source](https://www.kaggle.com/datasets/saurabhshahane/fake-news-classification))
-- **Algorithm**: Logistic Regression for fast and reliable text classification
-- **Features**: TF-IDF vectorization with up to 10,000 features
-- **Accuracy**: 85%+ on test data with cross-validation
-- **Processing**: Advanced text preprocessing with NLTK
-- **Deployment**: Real-time predictions via Flask API and web interface
+### 1. DistilBERT (Primary Model)
+- **Architecture**: DistilBERT-base-uncased (66M parameters)
+- **Features**: Contextual understanding of text
+- **Accuracy**: 90-95% on test data
+- **GPU Acceleration**: Optimized for NVIDIA GPUs with CUDA
+- **Memory Efficient**: Runs on GPUs with as little as 2GB VRAM
+
+### 2. Logistic Regression (Fallback Model)
+- **Algorithm**: Fast and lightweight
+- **Features**: TF-IDF vectorization with 10,000 features
+- **Accuracy**: 94.6% on validation set
+- **Deployment**: CPU-only, minimal resource requirements
+
+### Dataset
+- **Source**: WELFake Dataset with 72,134 labeled articles
+- **Training/Test Split**: 80/20 stratified split
+- **Class Balance**: Approximately 50/50 real vs fake news
+- **Preprocessing**: Advanced text cleaning and tokenization
+
+### Training Infrastructure
+- **GPU Support**: Automatic detection and optimization for NVIDIA GPUs
+- **Memory Management**: Automatic batch size adjustment for available VRAM
+- **Mixed Precision**: FP16 training for faster convergence (on supported GPUs)
+- **Checkpointing**: Automatic saving of best model during training
+- **Early Stopping**: Prevents overfitting and saves training time
+
+### Deployment
+- **Hybrid System**: Automatically selects best available model
+- **API Endpoints**: RESTful API for model inference
+- **Web Interface**: User-friendly interface for predictions
+- **Batch Processing**: Support for analyzing multiple articles at once
 
 ## Technology Stack
 
@@ -101,7 +126,15 @@ The application follows Flask best practices with:
 
 3. **Install dependencies**
    ```bash
+   # Install base requirements
    pip install -r requirements.txt
+   
+   # For GPU training (recommended)
+   python setup_gpu_training.py
+   
+   # Or for CPU-only installation
+   # pip install torch torchvision torchaudio
+   # pip install transformers datasets accelerate
    ```
 
 4. **Set environment variables**
@@ -171,13 +204,49 @@ flask show-stats
 # Optimize search index
 flask optimize-index
 
-# Machine Learning Commands
-flask ml train                    # Train the fake news model
-flask ml train --quick           # Quick train
+### Machine Learning Commands
+
+#### Training
+```bash
+# Quick training (5-10 minutes)
+python train_hybrid_models.py --quick
+
+# Full training (30-60 minutes)
+python train_hybrid_models.py
+
+# Train specific models
+python train_hybrid_models.py --distilbert-only  # Train only DistilBERT
+python train_hybrid_models.py --lr-only          # Train only Logistic Regression
+
+# Custom training parameters
+python train_hybrid_models.py --batch-size 4 --learning-rate 2e-5 --epochs 5
+```
+
+#### Prediction & Evaluation
+```bash
+# Make predictions
 flask ml predict "news text"     # Predict if text is fake/real
 flask ml predict-url "https://example.com/article"  # Predict from URL
+
+# Model information
 flask ml model-info              # Show model information
 flask ml test-samples            # Test with sample cases
+
+# Test model performance
+python test_models.py            # Run comprehensive tests
+```
+
+#### GPU Commands (Linux/Windows)
+```bash
+# Check GPU status (NVIDIA)
+nvidia-smi
+
+# Monitor GPU usage (Linux)
+nvidia-smi -l 1  # Updates every second
+
+# Monitor GPU usage (Windows)
+nvidia-smi -l 1
+```
 
 # Feed Management
 flask feeds add "Feed Name" "URL" "Category"

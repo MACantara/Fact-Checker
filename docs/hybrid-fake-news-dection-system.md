@@ -37,13 +37,37 @@ Successfully implemented a hybrid fake news detection system with GPU accelerati
 
 ## 🛠️ **Technical Implementation**
 
-### **Dependencies Installed**
+### **Dependencies Installation**
+
+#### Prerequisites
+- Python 3.8 or higher
+- NVIDIA GPU with CUDA support (recommended)
+- Windows/Linux/MacOS
+
+#### Automatic Installation (Recommended)
+```bash
+# Run the setup script (takes 5-10 minutes)
+python setup_gpu_training.py
 ```
-✅ PyTorch 2.5.1 with CUDA 12.1 support
-✅ Transformers 4.55.2 (HuggingFace)
-✅ Datasets 4.0.0
-✅ Accelerate 1.10.0
-✅ All existing scikit-learn dependencies
+
+#### Manual Installation
+```bash
+# Install PyTorch with CUDA support (choose appropriate version for your GPU)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121  # CUDA 12.1
+# Or for CUDA 11.8
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Install Transformers and related packages
+pip install transformers>=4.55.2 datasets>=4.0.0 accelerate>=1.10.0 tokenizers
+
+# Install other requirements
+pip install -r requirements.txt
+```
+
+#### Verify Installation
+```bash
+# Run a quick test to verify GPU availability
+python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else "None"}')"
 ```
 
 ### **New Files Created**
@@ -94,22 +118,70 @@ Your NVIDIA GTX 1050 with 2GB VRAM has been specifically optimized:
 - **Reliability**: Proven stable performance
 - **Resource Usage**: CPU only, minimal memory
 
-## 🚀 **Usage Instructions**
+## 🚀 **Training Instructions**
 
-### **Training Models**
+### **Environment Setup**
+1. **For GPU Training (Recommended)**
+   - Ensure you have an NVIDIA GPU with CUDA support
+   - Install the latest NVIDIA drivers
+   - Run the setup script:
+     ```bash
+     python setup_gpu_training.py
+     ```
+   - The script will automatically detect your GPU and install the appropriate CUDA version
+
+2. **For CPU-Only Training**
+   - No special setup required, but training will be significantly slower
+   - Install requirements:
+     ```bash
+     pip install -r requirements.txt
+     pip install torch torchvision torchaudio
+     pip install transformers datasets accelerate
+     ```
+
+### **Training Commands**
+
+#### Quick Training (5-10 minutes)
 ```bash
-# Quick training (5-10 minutes)
+# Both models
 python train_hybrid_models.py --quick
 
-# Full training (30-60 minutes)
-python train_hybrid_models.py
-
-# Train only DistilBERT
+# DistilBERT only
 python train_hybrid_models.py --distilbert-only --quick
 
-# Train only Logistic Regression
+# Logistic Regression only
 python train_hybrid_models.py --lr-only --quick
 ```
+
+#### Full Training (30-60 minutes)
+```bash
+# Both models
+python train_hybrid_models.py
+
+# DistilBERT only
+python train_hybrid_models.py --distilbert-only
+
+# Logistic Regression only
+python train_hybrid_models.py --lr-only
+```
+
+### **Training with Custom Parameters**
+```bash
+# Custom batch size (adjust based on GPU memory)
+python train_hybrid_models.py --batch-size 4 --gradient-accumulation-steps 4
+
+# Custom learning rate
+python train_hybrid_models.py --learning-rate 2e-5
+
+# Train for specific number of epochs
+python train_hybrid_models.py --epochs 5
+```
+
+### **Monitoring Training**
+- Training progress is displayed in the console
+- Model checkpoints are saved in `app/ml/models/`
+- Training logs are saved in `logs/training.log`
+- For GPU training, monitor VRAM usage with `nvidia-smi` (Linux/Windows) or `nvidia-smi -l 1` for continuous monitoring
 
 ### **Testing System**
 ```bash
