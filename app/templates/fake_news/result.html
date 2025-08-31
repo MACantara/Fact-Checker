@@ -154,6 +154,40 @@
             </div>
         </div>
 
+        <!-- Similar Articles Cross-check -->
+        {% if similar_articles %}
+        <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <i class="bi bi-layout-text-sidebar-reverse text-2xl text-indigo-600 mr-3"></i>
+                <h3 class="text-xl font-bold text-gray-900">Similar Articles from the Index</h3>
+            </div>
+
+            <div class="space-y-4">
+                {% for a in similar_articles %}
+                <div class="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <a href="{{ a.link }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-semibold hover:underline">{{ a.title }}</a>
+                            <div class="text-sm text-gray-600 mt-1">
+                                <span class="mr-2">{{ a.source }}</span>
+                                {% if a.published %}
+                                    <time>{{ a.published.strftime('%b %d, %Y %I:%M %p') }}</time>
+                                {% endif %}
+                            </div>
+                            {% if a.summary %}
+                            <p class="text-gray-700 mt-2">{{ a.summary[:200] }}{% if a.summary|length > 200 %}...{% endif %}</p>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4 flex-shrink-0">
+                            <a href="{{ a.link }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">Read</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Model Information -->
         <div class="bg-white shadow-xl rounded-xl p-8 mb-8 border border-gray-100">
             <div class="flex items-center mb-6">

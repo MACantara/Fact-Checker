@@ -2,8 +2,12 @@
 Web interface for fake news detection
 """
 
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, current_app
 from app.ml.predictor import FakeNewsPredictor
+from app.repositories import SearchRepository
+from app.services import SearchService
+from app.repositories.database import DatabaseRepository
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -52,13 +56,50 @@ def check():
             source = 'Text'
             analyzed_title = title
             analyzed_content = content[:500] + '...' if len(content) > 500 else content
-        
+
+        # Cross-check: query the site's search index for similar articles
+        similar_articles = []
+        try:
+            # Build search service (try Whoosh first, fallback to DB)
+            try:
+                search_repo = SearchRepository(current_app.config['WHOOSH_INDEX_PATH'])
+                search_service = SearchService(search_repo, DatabaseRepository())
+            except Exception:
+                search_service = SearchService(None, DatabaseRepository())
+
+            # Create a compact query using title + leading content
+            sq = f"{analyzed_title} {analyzed_content[:200]}".strip()
+            if sq:
+                query_data = {
+                    'query': sq,
+                    'category': None,
+                    'source': None,
+                    'page': 1,
+                    'per_page': 5,
+                    'sort_by': 'relevance'
+                }
+                search_results = search_service.search_articles(query_data)
+                similar_articles = search_results.get('articles', [])
+
+                # Convert any ISO strings for published back to datetimes for template
+                for a in similar_articles:
+                    pub = a.get('published')
+                    if isinstance(pub, str):
+                        try:
+                            a['published'] = datetime.fromisoformat(pub)
+                        except Exception:
+                            a['published'] = None
+        except Exception as e:
+            # Fail silently for cross-checks; do not block the main prediction
+            logger.warning(f"Cross-check search failed: {e}")
+
         return render_template('fake_news/result.html', 
                              result=result, 
                              source=source,
                              analyzed_title=analyzed_title,
                              analyzed_content=analyzed_content,
-                             original_url=url if url else None)
+                             original_url=url if url else None,
+                             similar_articles=similar_articles)
         
     except Exception as e:
         logger.error(f"Error in fake news check: {e}")
