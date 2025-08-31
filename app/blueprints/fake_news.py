@@ -67,8 +67,8 @@ def check():
             except Exception:
                 search_service = SearchService(None, DatabaseRepository())
 
-            # Create a compact query using title + leading content
-            sq = f"{analyzed_title} {analyzed_content[:200]}".strip()
+            # Use the article title as the primary query; fall back to leading content
+            sq = (analyzed_title or '').strip() or (analyzed_content[:200].strip() if analyzed_content else '').strip()
             if sq:
                 query_data = {
                     'query': sq,
