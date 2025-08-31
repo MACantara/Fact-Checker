@@ -67,6 +67,24 @@ def search():
         
         results = search_service.search_articles(query_data)
         metadata = search_service.get_search_metadata()
+
+        # Ensure published is a datetime when rendering HTML templates.
+        # Some code paths (e.g. Article.to_dict) return ISO strings which
+        # cause template calls like `article.published.strftime(...)` to fail.
+        for article in results.get('articles', []):
+            pub = article.get('published')
+            if isinstance(pub, str):
+                try:
+                    # Prefer fromisoformat which handles most ISO formats
+                    article['published'] = datetime.fromisoformat(pub)
+                except Exception:
+                    # If parsing fails, set to None so template shows 'Unknown date'
+                    try:
+                        # try a common fallback format with timezone
+                        from datetime import timezone
+                        article['published'] = datetime.fromisoformat(pub)
+                    except Exception:
+                        article['published'] = None
         
         return render_template('search_results.html', 
                              results=results, 
